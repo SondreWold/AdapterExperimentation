@@ -1,0 +1,12 @@
+python xnli_example.py \
+  --model_name_or_path bert-base-multilingual-cased \
+  --language de \
+  --train_language en \
+  --do_train \
+  --do_eval \
+  --per_device_train_batch_size 32 \
+  --learning_rate 5e-5 \
+  --num_train_epochs 2.0 \
+  --max_seq_length 128 \
+  --output_dir ./tmp/ \
+  --save_steps -1
