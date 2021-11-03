@@ -1,4 +1,4 @@
-python xnli_example.py \
+python -u ex/xnli_example.py \
   --model_name_or_path bert-base-multilingual-cased \
   --language de \
   --train_language en \
