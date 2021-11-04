@@ -9,7 +9,7 @@ import torch
 from datasets import load_dataset
 from torch.utils.data.dataloader import DataLoader
 from tqdm.auto import tqdm
-
+from transformers.adapters.configuration import AdapterConfig
 import transformers
 from accelerate import Accelerator
 from transformers import (
@@ -20,6 +20,7 @@ from transformers import (
     AutoModelForMaskedLM,
     AutoTokenizer,
     DataCollatorForLanguageModeling,
+    MultiLingAdapterArguments,
     SchedulerType,
     get_scheduler,
     set_seed,
@@ -166,6 +167,20 @@ def parse_args():
         "--mlm_probability", type=float, default=0.15, help="Ratio of tokens to mask for masked language modeling loss"
     )
 
+    parser.add_argument(
+        "--train_adapter",
+        type=bool,
+        default=False,
+        help="To train the adapter or not.",
+    )
+
+    parser.add_argument(
+        "--adapter_config",
+        type=str,
+        default="houlsby",
+        help="The adapter architecture config",
+    )
+
     args = parser.parse_args()
 
     # Sanity checks
@@ -289,6 +304,22 @@ def main():
         model = AutoModelForMaskedLM.from_config(config)
 
     model.resize_token_embeddings(len(tokenizer))
+
+    # ADAPTER TRAINING
+    # Setup adapters
+    if args.train_adapter:
+        logger.info("ADDING ADAPTER")
+        task_name = "mlm"
+        # check if adapter already exists, otherwise add it
+        if task_name not in model.config.adapters:
+            # resolve the adapter config
+            adapter_config = AdapterConfig.load(
+                args.adapter_config,
+            )
+            model.add_adapter(task_name, config=adapter_config)
+        # Freeze all model weights except of those of this adapter
+        model.train_adapter([task_name])
+        model.set_active_adapters(task_name)
 
     # Preprocessing the datasets.
     # First we tokenize all the texts.

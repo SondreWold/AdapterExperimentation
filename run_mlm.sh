@@ -8,4 +8,5 @@ python $TRAINING_FOLDER/mlm.py \
     --train_file $TRAIN_FILE \
     --validation_file $VAL_FILE \
     --line_by_line true \
+    --pad_to_max_length \
     --output_dir /tmp/test-mlm
