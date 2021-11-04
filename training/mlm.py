@@ -526,6 +526,7 @@ def main():
         logger.info(f"epoch {epoch}: perplexity: {perplexity}")
 
     if args.output_dir is not None:
+        logger.info("Saving model")
         accelerator.wait_for_everyone()
         unwrapped_model = accelerator.unwrap_model(model)
         unwrapped_model.save_pretrained(
