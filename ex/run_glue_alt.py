@@ -104,6 +104,10 @@ class DataTrainingArguments:
     overwrite_cache: bool = field(
         default=False, metadata={"help": "Overwrite the cached preprocessed datasets or not."}
     )
+
+    tune_both: bool = field(
+        default=False, metadata={"help": "Tune both the adapter and the original model."}
+    )
     pad_to_max_length: bool = field(
         default=True,
         metadata={
@@ -366,8 +370,10 @@ def main():
     if adapter_args.train_adapter:
         logger.info("Adapter training specified")
         task_name = data_args.task_name or "glue"
+        task_name = "mlm" if data_args.tune_both else task_name
         # check if adapter already exists, otherwise add it
         if task_name not in model.config.adapters:
+            logger.info("Adapter not in config")
             # resolve the adapter config
             adapter_config = AdapterConfig.load(
                 adapter_args.adapter_config,
@@ -385,6 +391,8 @@ def main():
             else:
                 logger.info("Adding a fresh adapter")
                 model.add_adapter(task_name, config=adapter_config)
+        if task_name in model.config.adapters:
+            logger.info("Found adapter in model config")
         # optionally load a pre-trained language adapter
         if adapter_args.load_lang_adapter:
             # resolve the language adapter config
@@ -405,7 +413,10 @@ def main():
         logger.info("Freeze everything except adapter parameters")
         model.train_adapter([task_name])
         # I want to fine-tune the entire model, including the adapter.
-        model.freeze_model(False)
+        if data_args.tune_both:
+            logger.info(
+                f"Keeping the weights open. Loaded pre-defined adapter: {task_name}")
+            model.freeze_model(False)
         # Set the adapters to be used in every forward pass
         if lang_adapter_name:
             model.set_active_adapters(ac.Stack(lang_adapter_name, task_name))

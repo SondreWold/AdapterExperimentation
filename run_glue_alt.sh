@@ -14,3 +14,4 @@ python -u ex/run_glue_alt.py \
   --adapter_config houlsby
   --output_dir tmp/$TASK_NAME/ \
   --overwrite_output_dir \
+  --tune_both \
