@@ -404,6 +404,8 @@ def main():
         # Freeze all model weights except of those of this adapter
         logger.info("Freeze everything except adapter parameters")
         model.train_adapter([task_name])
+        # I want to fine-tune the entire model, including the adapter.
+        model.freeze_model(False)
         # Set the adapters to be used in every forward pass
         if lang_adapter_name:
             model.set_active_adapters(ac.Stack(lang_adapter_name, task_name))
