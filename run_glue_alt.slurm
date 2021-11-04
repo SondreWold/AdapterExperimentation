@@ -40,5 +40,5 @@ ulimit -a
 module list
 
 # by default, pass on any remaining command-line options
-chmod u+x ./run_xnli.sh
-./run_xnli.sh
+chmod u+x ./run_glue_alt.sh
+./run_glue_alt.sh

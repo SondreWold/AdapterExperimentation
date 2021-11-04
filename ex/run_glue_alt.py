@@ -362,6 +362,7 @@ def main():
 
     # Setup adapters
     if adapter_args.train_adapter:
+        logger.info("Adapter training specified")
         task_name = data_args.task_name or "glue"
         # check if adapter already exists, otherwise add it
         if task_name not in model.config.adapters:
@@ -380,6 +381,7 @@ def main():
                 )
             # otherwise, add a fresh adapter
             else:
+                logger.info("Adding a fresh adapter")
                 model.add_adapter(task_name, config=adapter_config)
         # optionally load a pre-trained language adapter
         if adapter_args.load_lang_adapter:
@@ -398,6 +400,7 @@ def main():
         else:
             lang_adapter_name = None
         # Freeze all model weights except of those of this adapter
+        logger.info("Freeze everything except adapter parameters")
         model.train_adapter([task_name])
         # Set the adapters to be used in every forward pass
         if lang_adapter_name:
