@@ -58,6 +58,7 @@ require_version("datasets>=1.8.0",
 
 task_to_keys = {
     "cola": ("sentence", None),
+    "ax": ("premise", "hypothesis"),
     "mnli": ("premise", "hypothesis"),
     "mrpc": ("sentence1", "sentence2"),
     "qnli": ("question", "sentence"),
@@ -86,6 +87,7 @@ class DataTrainingArguments:
         metadata={"help": "The name of the task to train on: " +
                   ", ".join(task_to_keys.keys())},
     )
+
     dataset_name: Optional[str] = field(
         default=None, metadata={"help": "The name of the dataset to use (via the datasets library)."}
     )

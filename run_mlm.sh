@@ -13,5 +13,5 @@ python $TRAINING_FOLDER/mlm.py \
     --pad_to_max_length \
     --train_adapter true \
     --adapter_config "houlsby" \
-    --max_train_steps 1
+    --max_train_steps 100000 \
     --output_dir /tmp/test-mlm
