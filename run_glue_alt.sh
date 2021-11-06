@@ -11,7 +11,8 @@ python -u ex/run_glue_alt.py \
   --learning_rate 3e-5 \
   --num_train_epochs 3 \
   --train_adapter \
-  --adapter_config houlsby
+  --save_steps 10000 \
+  --adapter_config houlsby \
   --output_dir tmp/$TASK_NAME/ \
   --overwrite_output_dir \
   --tune_both \
