@@ -108,6 +108,7 @@ class DataTrainingArguments:
     tune_both: bool = field(
         default=False, metadata={"help": "Tune both the adapter and the original model."}
     )
+
     pad_to_max_length: bool = field(
         default=True,
         metadata={
@@ -366,11 +367,20 @@ def main():
         use_auth_token=True if model_args.use_auth_token else None,
     )
 
+    # Tune both adapter and normal weights
+
+    if training_args.tune_both:
+        logger.info("Setting: tuning both activated")
+        if "mlm" in model.config.adapters:
+            logger.info("Found mlm model in adapter config")
+            model.train_adapter(["mlm"])  # activate adapter
+            model.set_active_adapters(["mlm"])
+            model.freeze_model(False)  # keep normal weights dynamic
+
     # Setup adapters
     if adapter_args.train_adapter:
         logger.info("Adapter training specified")
         task_name = data_args.task_name or "glue"
-        task_name = "mlm" if data_args.tune_both else task_name
         # check if adapter already exists, otherwise add it
         if task_name not in model.config.adapters:
             logger.info("Adapter not in config")
@@ -412,11 +422,6 @@ def main():
         # Freeze all model weights except of those of this adapter
         logger.info("Freeze everything except adapter parameters")
         model.train_adapter([task_name])
-        # I want to fine-tune the entire model, including the adapter.
-        if data_args.tune_both:
-            logger.info(
-                f"Keeping the weights open. Loaded pre-defined adapter: {task_name}")
-            model.freeze_model(False)
         # Set the adapters to be used in every forward pass
         if lang_adapter_name:
             model.set_active_adapters(ac.Stack(lang_adapter_name, task_name))
