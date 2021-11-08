@@ -7,7 +7,5 @@ python -u ex/run_glue_no_trainer.py \
   --per_device_train_batch_size 16 \
   --learning_rate 3e-5 \
   --num_train_epochs 3 \
-  --save_steps 10000 \
   --output_dir tmp/$TASK_NAME/ \
-  --overwrite_output_dir \
-  --tune_both \
+  --tune_both true \

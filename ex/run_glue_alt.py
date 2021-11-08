@@ -322,7 +322,10 @@ def main():
     if data_args.task_name is not None:
         is_regression = data_args.task_name == "stsb"
         if not is_regression:
-            label_list = raw_datasets["train"].features["label"].names
+            if data_args.task_name == "ax":
+                label_list = ["contradiction", "entailment", "neutral"]
+            else:
+                label_list = raw_datasets["train"].features["label"].names
             num_labels = len(label_list)
         else:
             num_labels = 1
@@ -367,15 +370,6 @@ def main():
         use_auth_token=True if model_args.use_auth_token else None,
     )
 
-    # Tune both adapter and normal weights
-
-    if training_args.tune_both:
-        logger.info("Setting: tuning both activated")
-        if "mlm" in model.config.adapters:
-            logger.info("Found mlm model in adapter config")
-            model.train_adapter(["mlm"])  # activate adapter
-            model.set_active_adapters(["mlm"])
-            model.freeze_model(False)  # keep normal weights dynamic
 
     # Setup adapters
     if adapter_args.train_adapter:

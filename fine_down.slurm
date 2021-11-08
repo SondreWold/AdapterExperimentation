@@ -4,7 +4,7 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --time=30:00:00
 #SBATCH --partition=accel --gres=gpu:1
-#SBATCH --nodes=2
+#SBATCH --nodes=1
 #SBATCH --mem-per-cpu=10G
 #
 # by default, request two cores (NumPy may just know how to take
