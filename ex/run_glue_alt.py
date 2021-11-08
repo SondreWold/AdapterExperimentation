@@ -58,7 +58,6 @@ require_version("datasets>=1.8.0",
 
 task_to_keys = {
     "cola": ("sentence", None),
-    "ax": ("premise", "hypothesis"),
     "mnli": ("premise", "hypothesis"),
     "mrpc": ("sentence1", "sentence2"),
     "qnli": ("question", "sentence"),
@@ -369,7 +368,6 @@ def main():
         revision=model_args.model_revision,
         use_auth_token=True if model_args.use_auth_token else None,
     )
-
 
     # Setup adapters
     if adapter_args.train_adapter:
